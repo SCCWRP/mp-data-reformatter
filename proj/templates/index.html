@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+  <head>
+    <title>SCCWRP Data Receipt</title>
+	<link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+	<link rel="stylesheet" href="/receipt/static/receipt.css" />
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+  </head>
+  <style>
+
+	</style>
+  <body>
+		<div class="container main-container">
+			<br>
+			<div class="container form-container">
+				<form id="upload" action="/reformat/upload" method="GET">
+					<label for="file">Upload excel file and images</label>
+					<br>
+					<input type="file" id="files" name="files" multiple="multiple">
+				</form>
+			</div>
+		</div>
+
+  </body>
+<script type ="text/javascript"> var $SCRIPT_ROOT = {{request.script_root|tojson|safe }};  </script>
+<script src="/receipt/static/receipt.js"></script>
+</html>
