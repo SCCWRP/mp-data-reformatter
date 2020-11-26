@@ -30,14 +30,41 @@
 			</div>
 			<div class="after-upload hidden">
 				<div class = "reformat-download hidden">
-					<a href="reformat/reformatted">Click here for your reformatted data and images</a>
+					<a href="/reformat/reformatted">Click here for your reformatted data and images</a>
 				</div>
+
+				<div class = "missing-photo-container hidden">
+					<p>
+						The following particles had no associated photos uploaded.
+						Blank filler images were created so that you can proceed with submitting data. However, please double check whether or not you are 
+						actually missing the images.
+					</p>
+					
+					<ul class = "missing-photo-list">
+
+					</ul>
+				</div>
+
+				<div class = "misnamed-photoid-container hidden">
+					<p>
+						The following photoids in your data had no associated photos uploaded.
+						There were also photos found which had no associated particles.
+						It is very likely you misnamed a photo or particle.
+						Please double check your data and photos.
+					</p>
+					
+					<ul class = "misnamed-photoid-list">
+
+					</ul>
+				</div>
+
 				<div class = "unaccounted-photo-container hidden">
 					<p>The following photos were uploaded, but have no corresponding record associated with them</p>
 					<ul class = "unaccounted-photo-list">
 
 					</ul>
 				</div>
+
 			</div>
 		</div>
 
