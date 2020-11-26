@@ -5,19 +5,6 @@
 other than to not have the variables in the environment */ 
 (function(){
     
-    /*  
-    From StackOverflow
-    https://stackoverflow.com/questions/8006715/drag-drop-files-into-standard-html-file-input */
-    document.ondragover = document.ondragenter = function(evt) {
-        evt.preventDefault();
-    };
-    document.ondrop = function(evt) {
-        // pretty simple -- but not for IE :(
-        document.getElementById("files").files = evt.dataTransfer.files;
-        evt.preventDefault();
-    };
-    /* End code from StackOverflow */
-
     const submissionForm = document.getElementById("upload");
     submissionForm.addEventListener("submit", async function(event) {
         event.stopPropagation();
@@ -39,6 +26,7 @@ other than to not have the variables in the environment */
             );
             let data = await result.json();
             document.querySelector(".loading-image-container").classList.add("hidden");
+            document.querySelector(".after-upload").classList.remove("hidden");
             console.log(data);
             if (data.error) {
                 alert(data.message)
@@ -53,4 +41,23 @@ other than to not have the variables in the environment */
             }
     })
 
+    /*  
+    From StackOverflow
+    https://stackoverflow.com/questions/8006715/drag-drop-files-into-standard-html-file-input */
+    document.ondragover = document.ondragenter = function(evt) {
+        evt.preventDefault();
+    };
+    document.ondrop = function(evt) {
+        // pretty simple -- but not for IE :(
+        document.getElementById("files").files = evt.dataTransfer.files;
+        evt.preventDefault();
+    };
+    /* End code from StackOverflow */
+
+    document.getElementById("submit").addEventListener("click", function(){
+        document.querySelector(".after-upload").classList.add("hidden");
+        document.querySelector(".reformat-download").classList.add("hidden");
+        document.querySelector(".unaccounted-photo-container").classList.add("hidden");
+        document.querySelector(".unaccounted-photo-list").innerHTML = "";
+    })
 })()

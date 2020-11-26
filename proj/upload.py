@@ -7,7 +7,7 @@ from datetime import datetime
 import pandas as pd
 import numpy as np
 import psycopg2, urllib, json, re, time, datetime, os, glob
-import xlsxwriter, openpyxl, gc, itertools, zipfile, sh, folium
+import xlsxwriter, openpyxl, gc, itertools, zipfile, sh, shutil, folium
 from .reformat import reformat
 
 pd.set_option('display.max_columns', 18)
@@ -18,12 +18,14 @@ def upload():
     try:
         print("begin upload routine")
         # delete previously uploaded files and start clean
-        sh.rm(
-            glob.glob(os.path.join(session['new_files'], "*"))
-        )
-        sh.rm(
-            glob.glob(os.path.join(session['original_files'], "*"))
-        )
+        if len(glob.glob(os.path.join(session['new_files'], "*"))) > 0:
+            sh.rm(
+                glob.glob(os.path.join(session['new_files'], "*"))
+            )
+        if len(glob.glob(os.path.join(session['original_files'], "*"))) > 0:
+            sh.rm(
+                glob.glob(os.path.join(session['original_files'], "*"))
+            )
 
         uploaded_files = request.files.getlist('files[]')
         uploaded_filenames = [secure_filename(x.filename) for x in uploaded_files]
@@ -94,18 +96,18 @@ def upload():
 
         print("copy the excel file from the old directory to the new one")
         print(
-            "cp -r {} {}" \
-            .format(
+            """
+            shutil.copyfile(
                 os.path.join(session['original_files'], excel_filename),
                 os.path.join(session['new_files'], excel_filename)
+            
             )
+            """
         )
-        os.system(
-            "cp -r {} {}" \
-            .format(
-                os.path.join(session['original_files'], excel_filename),
-                os.path.join(session['new_files'], excel_filename)
-            )
+        
+        shutil.copyfile(
+            os.path.join(session['original_files'], excel_filename),
+            os.path.join(session['new_files'], excel_filename)
         )
 
         # Get the original sheet names of the excel file that was given
@@ -134,6 +136,15 @@ def upload():
         original_rawdata.columns = [x.lower() for x in original_rawdata.columns]
         print("original_rawdata")
         print(original_rawdata)
+
+        # alter their data that they gave us, in ways that it should be
+        # Certain columns are always uppercase text
+        for col in ['labid','sampletype','sampleid']:
+            original_rawdata[col] = \
+                original_rawdata[col] \
+                .apply(
+                    lambda x: str(x).upper()
+                )
 
         # They should not have more than one lab in their submission
         # Nor should they have more than one matrix
@@ -186,31 +197,35 @@ def upload():
         # reformat the dataframe, make one for comparison and another for the final thing they will use
         comp, reformatted_data = reformat(original_rawdata)
         print("data has been reformatted")
-        print("comp.head()")
-        print(comp.head())
-        print("reformatted_data.head()")
-        print(reformatted_data.head())
+        print("comp")
+        print(comp)
+        print("reformatted_data")
+        print(reformatted_data)
         
         # copy images and rename them
         
         # temp dataframe that contains original filenames with extensions
+        print("creating tmp")
         tmp = comp \
             .merge(
                 pd.DataFrame({
-                    "original_photoid": [p.split(".")[0] for p in uploaded_photos],
+                    "original_photoid": [str(p).split(".")[0] for p in uploaded_photos],
                     "original_filename": uploaded_photos
                 }),
                 how = 'left',
                 on = 'original_photoid'
             )
-        
+        print("tmp")
+        print(tmp)
+        print("uploaded_photos")
+        print(uploaded_photos)
         [
             os.system(
                 f"""
                 cp {session['original_files']}/{ids[0]} {session['new_files']}/{ids[1]}.{ids[2]};
                 """
             )
-            for ids in zip(tmp.original_filename, tmp.photoid, tmp.original_filename.apply(lambda x: x.split('.')[-1]))
+            for ids in zip(tmp.original_filename, tmp.photoid, tmp.original_filename.apply(lambda x: str(x).split('.')[-1]))
         ]
 
         # finally, save the new dataframes into the new excel file
@@ -247,9 +262,12 @@ def upload():
             "{}_{}".format(session['lab'], session['matrix'])
         )
         print(final_dir)
-        os.system(f"mkdir -p {final_dir}")
-        print(f"cp -r {session['new_files']} {final_dir}")
-        os.system(f"cp -r {session['new_files']} {final_dir}")
+        print("shutil.copytree(session['new_files'], final_dir)")
+        assert final_dir.count("/") > 5, "final_dir is a too high level of a directory. Refusing to remove it"
+
+        if os.path.exists(final_dir):
+            shutil.rmtree(final_dir)
+        shutil.copytree(session['new_files'], final_dir)
 
         z = zipfile.ZipFile("{}.zip".format(final_dir), 'w', zipfile.ZIP_DEFLATED)
         # The root directory within the ZIP file.
@@ -264,8 +282,14 @@ def upload():
                 arcname    = os.path.join(rootdir, parentpath)
 
                 z.write(filepath, arcname)
+        shutil.rmtree(final_dir)
 
-        return jsonify(message="ok")
+        return \
+        jsonify(
+            message="ok",
+            unaccounted_photos=list(unaccounted_photos)
+        )
+        
     except Exception as e:
         print("Exception occurred")
         print(e)
