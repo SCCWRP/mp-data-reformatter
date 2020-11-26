@@ -29,16 +29,46 @@ other than to not have the variables in the environment */
             document.querySelector(".after-upload").classList.remove("hidden");
             console.log(data);
             if (data.error) {
-                alert(data.message)
-            } else if (data.photo_error) {
-                document.querySelector(".unaccounted-photo-container").classList.remove("hidden");
-                data.unaccounted_photos.map(p => {
-                    document.querySelector(".unaccounted-photo-list")
-                    .innerHTML += `<li>${p}</li>`
-                })
+                console.log(data.message);
+                alert("Application failed");
+                /*  Implement notification when the app crashes
+                    Let user know that we were notified */
             } else {
+
+                /* Let them download their data regardless */
                 document.querySelector(".reformat-download").classList.remove("hidden");
-            }
+                
+                /* Warn the user of photos uploaded but have no correspondiong records */
+                if (data.unaccounted_photos.length > 0) {
+                    document.querySelector(".unaccounted-photo-container").classList.remove("hidden");
+                    data.unaccounted_photos.map(p => {
+                        document.querySelector(".unaccounted-photo-list")
+                        .innerHTML += `<li>${p}</li>`
+                    })
+                    if (data.missing_photos.length > 0) {
+                        /* Warn user of photos that are missing
+                        SCCWRP also needs to be made aware of this */
+                        
+                        document.querySelector(".misnamed-photoid-container").classList.remove("hidden");
+                        data.missing_photos.map(p => {
+                            document.querySelector(".misnamed-photoid-list")
+                            .innerHTML += `<li>${p}</li>`
+                        })
+                    }
+                } else if (data.missing_photos.length > 0) {
+                    /* Warn user of photos that are missing
+                    SCCWRP also needs to be made aware of this */
+                    
+                    document.querySelector(".missing-photo-container").classList.remove("hidden");
+                    data.missing_photos.map(p => {
+                        document.querySelector(".missing-photo-list")
+                        .innerHTML += `<li>${p}</li>`
+                    })
+                } else {
+                    console.log("Nothing missing")
+                }
+
+            } 
     })
 
     /*  
@@ -58,6 +88,10 @@ other than to not have the variables in the environment */
         document.querySelector(".after-upload").classList.add("hidden");
         document.querySelector(".reformat-download").classList.add("hidden");
         document.querySelector(".unaccounted-photo-container").classList.add("hidden");
+        document.querySelector(".misnamed-photoid-container").classList.add("hidden");
+        document.querySelector(".missing-photo-container").classList.add("hidden");
         document.querySelector(".unaccounted-photo-list").innerHTML = "";
+        document.querySelector(".misnamed-photoid-list").innerHTML = "";
+        document.querySelector(".missing-photo-list").innerHTML = "";
     })
 })()

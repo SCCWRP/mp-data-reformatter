@@ -182,16 +182,12 @@ def upload():
         # switched to using regular expressions, which in a way is also bad because the way i implement it
         # assumes they have a period in the file name
         unaccounted_photos = \
-            set(re.search(file_pat, p).groups()[0] for p in uploaded_photos) - \
-            set(original_rawdata.photoid.tolist())
+            list(
+                set(re.search(file_pat, p).groups()[0] for p in uploaded_photos) - \
+                set(original_rawdata.photoid.tolist())
+            )
         print("unaccounted_photos")
         print(unaccounted_photos)
-        if len(unaccounted_photos) > 0:
-            print(
-                "Uploaded images {} do not have corresponding records in the rawdata" \
-                .format(','.join(unaccounted_photos))
-            )
-            return jsonify(photo_error="true",unaccounted_photos=list(unaccounted_photos))
 
 
         # reformat the dataframe, make one for comparison and another for the final thing they will use
@@ -225,8 +221,46 @@ def upload():
                 cp {session['original_files']}/{ids[0]} {session['new_files']}/{ids[1]}.{ids[2]};
                 """
             )
-            for ids in zip(tmp.original_filename, tmp.photoid, tmp.original_filename.apply(lambda x: str(x).split('.')[-1]))
+            for ids in 
+            zip(
+                tmp.original_filename, tmp.photoid, tmp.original_filename.apply(lambda x: str(x).split('.')[-1])
+            )
+            if not pd.isnull(ids[0])
         ]
+
+
+        ##############################################################################
+        #  Routine for creating filler images or moving over the unaccounted images  #
+        ##############################################################################
+
+        missing_photos = tmp[pd.isnull(tmp.original_filename)].original_photoid.unique().tolist()
+        print("missing_photos")
+        print(missing_photos)
+
+        if len(unaccounted_photos) == 0:
+            # Only create filler photos if they provided all the images they could
+            # Do not run this code if they have photos with no corresponding records
+
+            # Here we create the filler images
+            [ 
+                os.system(f"touch {os.path.join(session['new_files'], mp)}.jpg") 
+                for mp in 
+                tmp[pd.isnull(tmp.original_filename)].photoid.tolist()
+            ]
+        else:
+            # if they do have unaccounted photos, move them over
+            # They will need to be warned about this though
+            [
+                os.system(
+                    f"""
+                    cp {session['original_files']}/{img} {session['new_files']}/{img};
+                    """
+                )
+                for img in uploaded_photos
+                if re.search(file_pat, img).groups()[0] in unaccounted_photos
+            ]
+
+
 
         # finally, save the new dataframes into the new excel file
         writer = pd.ExcelWriter(os.path.join(session['new_files'], excel_filename), engine = 'openpyxl')
@@ -287,9 +321,10 @@ def upload():
         return \
         jsonify(
             message="ok",
-            unaccounted_photos=list(unaccounted_photos)
+            unaccounted_photos=unaccounted_photos,
+            missing_photos=missing_photos
         )
-        
+
     except Exception as e:
         print("Exception occurred")
         print(e)
