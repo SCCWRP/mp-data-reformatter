@@ -135,10 +135,8 @@ def upload():
         print("original_rawdata")
         print(original_rawdata)
 
-
-        # Horrible horrible way to go about this.
-        # This info needs to be submitted in the original form.
-        # We can take care of that later
+        # They should not have more than one lab in their submission
+        # Nor should they have more than one matrix
         assert \
             len(original_rawdata.labid.unique() == 1), \
             "There appear to be two labIDs in this one file, {}" \

@@ -4,6 +4,19 @@
 /*  Literally no reason to wrap the entire JS part of the app inside of an IIFE 
 other than to not have the variables in the environment */ 
 (function(){
+    
+    /*  
+    From StackOverflow
+    https://stackoverflow.com/questions/8006715/drag-drop-files-into-standard-html-file-input */
+    document.ondragover = document.ondragenter = function(evt) {
+        evt.preventDefault();
+    };
+    document.ondrop = function(evt) {
+        // pretty simple -- but not for IE :(
+        document.getElementById("files").files = evt.dataTransfer.files;
+        evt.preventDefault();
+    };
+    /* End code from StackOverflow */
 
     const submissionForm = document.getElementById("upload");
     submissionForm.addEventListener("submit", async function(event) {
