@@ -13,6 +13,7 @@ from pandas import DataFrame
 import folium
 import xlsxwriter
 import gc
+import glob, sh
 
 @app.route('/')
 def index():
@@ -26,8 +27,29 @@ def index():
         os.system("mkdir -p {}".format(session['basedir']))
         os.system("mkdir -p {}".format(session['original_files']))
         os.system("mkdir -p {}".format(session['new_files']))
-
+    else:
+        sh.rm(
+            glob.glob(os.path.join(session['new_files'], "*"))
+        )
+        sh.rm(
+            glob.glob(os.path.join(session['original_files'], "*"))
+        )
     return render_template("index.html", sessionid=session['sessionid'])
 
-
+@app.route('/reformatted')
+def reformatted():
+    if session.get("new_files"):
+        z = os.path.join(
+            session['basedir'], 
+            "{}_{}.zip".format(session['lab'], session['matrix'])
+        )
+                
+        if os.path.exists(z):
+            return send_file(
+                z, as_attachment=True, attachment_filename="{}_{}.zip".format(session['lab'], session['matrix'])
+            )
+        else:
+            return "reformatted zip file not found on the server"
+    else:
+        return "nothing has been uploaded yet"
 

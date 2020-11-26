@@ -1,12 +1,12 @@
 import pandas as pd
 import glob, os, re
-def reformat(df):
+def reformat(orig_df):
 
     grouping_columns  = ['labid','sampleid','sizefraction', 'instrumenttype']
     
-    original_rawdata.columns = [x.lower() for x in original_rawdata.columns]
+    orig_df.columns = [x.lower() for x in orig_df.columns]
     
-    new = original_rawdata \
+    new = orig_df \
         .groupby(
             grouping_columns
         ) \
@@ -82,7 +82,7 @@ def reformat(df):
     )
 
     # comparison_df will have the old particleid and photoids side by side
-    comparison_df = new[original.columns.tolist()]
+    comparison_df = new[orig_df.columns.tolist()]
     comparison_df.insert(
         comparison_df.columns.tolist().index("particleid"),
         "original_particleid",
