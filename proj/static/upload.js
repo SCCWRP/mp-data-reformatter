@@ -9,7 +9,7 @@ other than to not have the variables in the environment */
     submissionForm.addEventListener("submit", async function(event) {
         event.stopPropagation();
         event.preventDefault();
-        //document.querySelector(".records-display-inner-container").innerHTML = '<img src="/changerequest/static/loading.gif">';
+        document.querySelector(".loading-image-container").classList.remove("hidden");
         //const dropped_files = event.originalEvent.dataTransfer.files;
         const dropped_files = document.querySelector('[type=file]').files;
         const formData = new FormData();
@@ -23,14 +23,21 @@ other than to not have the variables in the environment */
                 method: 'post',
                 body: formData
             }
-        );
-        let data = await result.json();
-        console.log(data);
-        if (data.error === "true") {
-            alert(data.message)
-        } else {
-            document.querySelector(".reformat-download").classList.remove("hidden");
-        }
+            );
+            let data = await result.json();
+            document.querySelector(".loading-image-container").classList.add("hidden");
+            console.log(data);
+            if (data.error) {
+                alert(data.message)
+            } else if (data.photo_error) {
+                document.querySelector(".unaccounted-photo-container").classList.remove("hidden");
+                data.unaccounted_photos.map(p => {
+                    document.querySelector(".unaccounted-photo-list")
+                    .innerHTML += `<li>${p}</li>`
+                })
+            } else {
+                document.querySelector(".reformat-download").classList.remove("hidden");
+            }
     })
 
 })()

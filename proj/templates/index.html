@@ -23,8 +23,19 @@
 					<button id="submit" type = "submit">Click here to upload your files and reformat the data</button>
 				</form>
 			</div>
+			<div class="loading-image-container hidden">
+				It may take a while for the files to reach the server. 
+				After they get there, the reformatting should take only a few seconds.
+				<img src="/reformat/static/loading.gif">
+			</div>
 			<div class = "reformat-download hidden">
 				<a href="reformat/reformatted">Click here for your reformatted data and images</a>
+			</div>
+			<div class = "unaccounted-photo-container hidden">
+				<p>The following photos were uploaded, but have no corresponding record associated with them</p>
+				<ul class = "unaccounted-photo-list">
+
+				</ul>
 			</div>
 		</div>
 

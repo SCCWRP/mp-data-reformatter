@@ -3,17 +3,11 @@ from flask import send_from_directory, render_template, request, redirect, Respo
 from werkzeug.utils import secure_filename
 from sqlalchemy import create_engine, text
 from sqlalchemy import exc,Table,MetaData
-import urllib, json, re, time, datetime, os, glob
+from datetime import datetime
 import pandas as pd
 import numpy as np
-from datetime import datetime
-import psycopg2
-from pandas import DataFrame
-import folium
-import xlsxwriter, openpyxl
-import gc
-import itertools
-import zipfile
+import psycopg2, urllib, json, re, time, datetime, os, glob
+import xlsxwriter, openpyxl, gc, itertools, zipfile, sh, folium
 from .reformat import reformat
 
 pd.set_option('display.max_columns', 18)
@@ -23,6 +17,13 @@ uploader = Blueprint("uploader", __name__)
 def upload():
     try:
         print("begin upload routine")
+        # delete previously uploaded files and start clean
+        sh.rm(
+            glob.glob(os.path.join(session['new_files'], "*"))
+        )
+        sh.rm(
+            glob.glob(os.path.join(session['original_files'], "*"))
+        )
 
         uploaded_files = request.files.getlist('files[]')
         uploaded_filenames = [secure_filename(x.filename) for x in uploaded_files]
@@ -176,9 +177,13 @@ def upload():
             set(original_rawdata.photoid.tolist())
         print("unaccounted_photos")
         print(unaccounted_photos)
-        assert len(unaccounted_photos) == 0, \
-            "Uploaded images {} do not have corresponding records in the rawdata" \
-            .format(','.join(unaccounted_photos))
+        if len(unaccounted_photos) > 0:
+            print(
+                "Uploaded images {} do not have corresponding records in the rawdata" \
+                .format(','.join(unaccounted_photos))
+            )
+            return jsonify(photo_error="true",unaccounted_photos=list(unaccounted_photos))
+
 
         # reformat the dataframe, make one for comparison and another for the final thing they will use
         comp, reformatted_data = reformat(original_rawdata)

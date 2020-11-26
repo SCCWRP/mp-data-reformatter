@@ -27,13 +27,7 @@ def index():
         os.system("mkdir -p {}".format(session['basedir']))
         os.system("mkdir -p {}".format(session['original_files']))
         os.system("mkdir -p {}".format(session['new_files']))
-    else:
-        sh.rm(
-            glob.glob(os.path.join(session['new_files'], "*"))
-        )
-        sh.rm(
-            glob.glob(os.path.join(session['original_files'], "*"))
-        )
+
     return render_template("index.html", sessionid=session['sessionid'])
 
 @app.route('/reformatted')
