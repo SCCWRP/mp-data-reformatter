@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>
+
+    </title>
+  </head>
+  <body>
+    <main>
+      <div class = "main-container">
+        <div class = "dl-link-contianer">
+          <a href="/reformat/reformatted?sessionid={{sessionid}}&lab={{lab}}&matrix={{matrix}}">
+            Get your reformatted data here
+          </a>
+        </div>
+        {% if (missing_photos|length > 0) and (unaccounted_photos|length == 0) %}
+        <div class = "missing-photo-container hidden">
+					<p>
+						The following particles had no associated photos uploaded.
+						Blank filler images were created so that you can proceed with submitting data. However, please double check whether or not you are 
+						actually missing the images.
+					</p>
+					
+					<ul class = "missing-photo-list">
+            {% for p in missing_photos %}
+              <li>{{p}}</li>
+            {% endfor %}
+					</ul>
+        </div>
+        {% endif %}
+
+        {% if (missing_photos|length > 0) and (unaccounted_photos|length > 0) %}
+				<div class = "misnamed-photoid-container hidden">
+					<p>
+						The following photoids in your data had no associated photos uploaded.
+						There were also photos found which had no associated particles.
+						It is very likely you misnamed a photo or particle.
+						Please double check your data and photos.
+					</p>
+					
+					<ul class = "misnamed-photoid-list">
+            {% for p in missing_photos %}
+            <li>{{p}}</li>
+            {% endfor %}
+					</ul>
+        </div>
+        {% endif %}
+
+        {% if unaccounted_photos|length > 0 %}
+				<div class = "unaccounted-photo-container hidden">
+					<p>The following photos were uploaded, but have no corresponding record associated with them</p>
+					<ul class = "unaccounted-photo-list">
+            {% for p in unaccounted_photos %}
+              <li>{{p}}</li>
+            {% endfor %}
+					</ul>
+        </div>
+        {% endif %}
+      </div>
+    </main>
+
+  </body>
+</html>

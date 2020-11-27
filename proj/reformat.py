@@ -396,19 +396,16 @@ def full_reformat(original_dir, new_dir, base_dir, email, sessionid):
                 z.write(filepath, arcname)
         shutil.rmtree(final_dir)
 
-        dl_link = f"\
-            https://mpchecker.sccwrp.org/reformat/reformatted?\
-            sessionid={sessionid}&\
-            lab={lab}&\
-            matrix={matrix}\
-        "
-
+        dl_link = f"https://mpchecker.sccwrp.org/reformat/{sessionid}"
+        print("dl_link")
+        print(dl_link)
+        
         if email:
             send_mail(
                 "admin@mpchecker.sccwrp.org",
                 [email, "robertb@sccwrp.org"],
                 "Microplastics - Reformatted Data",
-                dl_link,
+                f"Your reformatted data and report are available here: {dl_link}",
                 server = '192.168.1.18'
             )
 
