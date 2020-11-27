@@ -26,9 +26,16 @@
 					</li>
 					<li>I estimate the time for the data to reach our server may be about a minute for every 100MB</li>
 					<li>Remember there is a 500MB limit on submissions</li>
+					<li>You can opt in to receive an email after the files are done processing.
+						This way you only have to wait until the page tells you the server received your files.
+						If you do not want the email, then you can leave the email field blank.
+					</li>
 				</ul>
 
 				<form id="upload" action="/reformat/upload" method="GET">
+					<label for="email">Enter your email address:</label>
+					<input type="email" name="email" id="email">
+					<br>
 					<label for="file">Upload excel file and images</label>
 					<br>
 					<input type="file" id="files" name="files" multiple="multiple">

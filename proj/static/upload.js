@@ -32,6 +32,7 @@ other than to not have the variables in the environment */
             /* submit as array to as file array - otherwise will fail */
             formData.append('files[]', dropped_files[i]);
         }
+        formData.append("email",document.querySelector("#email").value);
         let result = await fetch(
             `/reformat/upload`,
             {

@@ -8,6 +8,7 @@ import pandas as pd
 import numpy as np
 import psycopg2, urllib, json, re, time, datetime, os, glob
 import xlsxwriter, openpyxl, gc, itertools, zipfile, sh, shutil, folium
+import pika
 from .reformat import reformat
 
 pd.set_option('display.max_columns', 18)
@@ -26,6 +27,9 @@ def upload():
             sh.rm(
                 glob.glob(os.path.join(session['original_files'], "*"))
             )
+        email = request.form.get("email")
+        print("email")
+        print(email)
 
         uploaded_files = request.files.getlist('files[]')
         assert len(uploaded_files) > 0, "No files found"
@@ -89,6 +93,32 @@ def upload():
             file.save(
                 os.path.join(session['original_files'], '{}.{}'.format(filename,extension.lower()))
             )
+
+        if email != '':
+            connection = pika.BlockingConnection(
+                pika.ConnectionParameters(host='rabbitmq')
+            )
+            channel = connection.channel()
+
+            channel.queue_declare(queue='mp_reformat')
+
+            msgbody = json.dumps({
+                'original_dir': session['original_files'],
+                'new_dir': session['new_files'],
+                'base_dir': session['basedir'],
+                'email': email
+            })
+
+            channel.basic_publish(
+                exchange = '', 
+                routing_key = 'mp_reformat', 
+                body = msgbody
+            )
+            print(f"Sent {msgbody}")
+            connection.close()
+
+            raise Exception(f"email will be sent to {email}")
+
 
         
         excel_filename = glob.glob(os.path.join(session['original_files'], "*.xls*"))[0].rsplit("/", 1)[-1]
