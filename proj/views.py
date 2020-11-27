@@ -55,9 +55,9 @@ def status():
         if len(glob.glob(os.path.join(session['original_files'], "*"))) > 0:
             if len(glob.glob(os.path.join(session['new_files'], "*"))) > 0:
                 return jsonify(message="files processed")
-            return jsonify(message="files received")
-        else:
-            return jsonify(message="nothing")
+            else:
+                return jsonify(message="files received")
+        return jsonify(message="nothing")
     else:
         return jsonify(message="Server received this request unexpectedly")
 
