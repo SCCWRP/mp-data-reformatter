@@ -1,3 +1,11 @@
+# INFO
+# There is a container called reformat-mq, whose docker file is in the rabbitmq folder in this same project directory
+# There is the rabbitmq container running on this host machine also, which acts as the rabbit mq server
+# The upload.py script checks if the user entered their email or not.
+#    If they did, the script sends the relevant information to the rabbitmq server via the mp_reformat queue
+# This script acts as the "consumer" The reformat-mq script runs this main.py script and listens for messages
+#    coming in from the rabbitmq server, on the mp_reformat queue
+
 import pika, sys, os, json
 
 if __name__ == '__main__':
