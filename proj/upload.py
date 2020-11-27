@@ -263,11 +263,17 @@ def upload():
             ]
 
 
-
         # finally, save the new dataframes into the new excel file
         writer = pd.ExcelWriter(os.path.join(session['new_files'], excel_filename), engine = 'openpyxl')
         writer.book = openpyxl.load_workbook(os.path.join(session['new_files'], excel_filename))
 
+        # this dataframe will be included in the excel file to help both the user and SCCWRP
+        audit = pd.DataFrame({
+            "Missing Photos"          : pd.Series(missing_photos),
+            "Photo with No Corresponding Record" : pd.Series(unaccounted_photos)
+        })
+
+        audit.to_excel(writer, sheet_name = "Missing Photos or Records", index = False)
         comp.to_excel(writer, sheet_name = "RawData For Comparison", index = False)
         reformatted_data.to_excel(writer, sheet_name = "new_rawdataresults", index = False)
 

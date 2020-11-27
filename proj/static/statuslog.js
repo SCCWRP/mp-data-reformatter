@@ -7,7 +7,6 @@ other than to not have the variables in the environment */
     const getStatus = async function (){
         let result = await fetch(`/reformat/status`);
         let data = await result.json();
-        console.log(data.message);
         if (data.message === "nothing") {
             console.log("nothing");
             document.querySelector(".files-received").classList.add("hidden");
