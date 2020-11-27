@@ -1,16 +1,31 @@
-/* Javascript code for the receipt tool */
+/* Javascript code for the reformatting tool */
 
 
 /*  Literally no reason to wrap the entire JS part of the app inside of an IIFE 
 other than to not have the variables in the environment */ 
 (function(){
-    
+    let photoLists = [".unaccounted-photo-list",".misnamed-photoid-list",".missing-photo-list"];
+    let hiddenItems = [
+        ".after-upload",".files-received",".reformat-download",
+        ".unaccounted-photo-container",".misnamed-photoid-container",
+        ".missing-photo-container"
+    ];
+
     const submissionForm = document.getElementById("upload");
     submissionForm.addEventListener("submit", async function(event) {
         event.stopPropagation();
         event.preventDefault();
+        photoLists.map(s => {document.querySelector(s).innerHTML = ""});
+        hiddenItems.map(s => {document.querySelector(s).classList.add("hidden")});
         document.querySelector(".loading-image-container").classList.remove("hidden");
-        //const dropped_files = event.originalEvent.dataTransfer.files;
+
+        fetch(`/reformat/clear`)
+            .then(response => response.json())
+            .then(data => console.log(data.message))
+            .catch((error) => {
+                console.error('Error:', error);
+              });
+
         const dropped_files = document.querySelector('[type=file]').files;
         const formData = new FormData();
         for(let i = 0; i < dropped_files.length; ++i){
@@ -26,6 +41,7 @@ other than to not have the variables in the environment */
             );
             let data = await result.json();
             document.querySelector(".loading-image-container").classList.add("hidden");
+            document.querySelector(".files-received").classList.add("hidden");
             document.querySelector(".after-upload").classList.remove("hidden");
             console.log(data);
             if (data.error) {
@@ -84,14 +100,5 @@ other than to not have the variables in the environment */
     };
     /* End code from StackOverflow */
 
-    document.getElementById("submit").addEventListener("click", function(){
-        document.querySelector(".after-upload").classList.add("hidden");
-        document.querySelector(".reformat-download").classList.add("hidden");
-        document.querySelector(".unaccounted-photo-container").classList.add("hidden");
-        document.querySelector(".misnamed-photoid-container").classList.add("hidden");
-        document.querySelector(".missing-photo-container").classList.add("hidden");
-        document.querySelector(".unaccounted-photo-list").innerHTML = "";
-        document.querySelector(".misnamed-photoid-list").innerHTML = "";
-        document.querySelector(".missing-photo-list").innerHTML = "";
-    })
+
 })()

@@ -31,7 +31,7 @@
 				<form id="upload" action="/reformat/upload" method="GET">
 					<label for="file">Upload excel file and images</label>
 					<br>
-					<input type="file" id="files" name="files" multiple="multiple" onchange="submitForm()">
+					<input type="file" id="files" name="files" multiple="multiple">
 					<button id="submit" type = "submit">Click here to upload your files and reformat the data</button>
 				</form>
 			</div>
@@ -39,6 +39,10 @@
 				It may take a while for the files to reach the server. 
 				After they get there, the reformatting should take only a few seconds.
 				<img src="/reformat/static/loading.gif">
+			</div>
+			<div class="files-received hidden">
+				The server has received your files and they are now being processed
+				<img src="/reformat/static/ajax-loader_blue.gif">
 			</div>
 			<div class="after-upload hidden">
 				<div class = "reformat-download hidden">
@@ -83,4 +87,5 @@
   </body>
 <script type ="text/javascript"> var $SCRIPT_ROOT = {{request.script_root|tojson|safe }};  </script>
 <script src="/reformat/static/upload.js"></script>
+<script src="/reformat/static/statuslog.js"></script>
 </html>

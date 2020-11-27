@@ -20,6 +20,7 @@ def index():
     print(session.get('sessionid'))
     if session.get('sessionid') is None:
         session['sessionid'] = str(int(time.time()))
+
         session['basedir'] = os.path.join(os.getcwd(), "files", session['sessionid'])
         session['original_files'] = os.path.join(os.getcwd(), "files", session['sessionid'], "original")
         session['new_files'] = os.path.join(os.getcwd(), "files", session['sessionid'], "new")
@@ -47,3 +48,31 @@ def reformatted():
     else:
         return "nothing has been uploaded yet"
 
+
+@app.route('/status')
+def status():
+    if session.get("original_files") and session.get("new_files"):
+        if len(glob.glob(os.path.join(session['original_files'], "*"))) > 0:
+            if len(glob.glob(os.path.join(session['new_files'], "*"))) > 0:
+                return jsonify(message="files processed")
+            return jsonify(message="files received")
+        else:
+            return jsonify(message="nothing")
+    else:
+        return jsonify(message="Server received this request unexpectedly")
+
+@app.route('/clear')
+def clear():
+    if session.get("new_files") and session.get("original_files"):
+        # start fresh
+        if len(glob.glob(os.path.join(session['new_files'], "*"))) > 0:
+            sh.rm(
+                glob.glob(os.path.join(session['new_files'], "*"))
+            )
+        if len(glob.glob(os.path.join(session['original_files'], "*"))) > 0:
+            sh.rm(
+                glob.glob(os.path.join(session['original_files'], "*"))
+            )
+        return jsonify(message="ok")
+    else:
+        return jsonify(message="Unexpected request received")
