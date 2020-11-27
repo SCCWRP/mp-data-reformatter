@@ -106,7 +106,8 @@ def upload():
                 'original_dir': session['original_files'],
                 'new_dir': session['new_files'],
                 'base_dir': session['basedir'],
-                'email': email
+                'email': email,
+                'sessionid': session['sessionid']
             })
 
             channel.basic_publish(

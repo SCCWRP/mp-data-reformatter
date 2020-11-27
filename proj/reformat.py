@@ -140,7 +140,7 @@ def reformat(orig_df):
 
 
 
-def full_reformat(original_dir, new_dir, base_dir, email):
+def full_reformat(original_dir, new_dir, base_dir, email, sessionid):
     '''
     original_dir is just the directory that keeps the user's original files
     new_dir is the one they will be transferred to
@@ -400,8 +400,11 @@ def full_reformat(original_dir, new_dir, base_dir, email):
             "admin@mpchecker.sccwrp.org",
             [email, "robertb@sccwrp.org"],
             "Microplastics - Reformatted Data",
-            "We can't send the zip file as an attachment, \
-            but we are working on getting a download link or something like that",
+            f"https://mpchecker.sccwrp.org/reformat/reformatted?\
+                sessionid={sessionid}&\
+                lab={lab}&\
+                matrix={matrix}"
+            ,
             server = '192.168.1.18'
         )
 

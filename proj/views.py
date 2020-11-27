@@ -33,6 +33,19 @@ def index():
 
 @app.route('/reformatted')
 def reformatted():
+    sessionid = request.args.get("sessionid")
+    lab = request.args.get("lab")
+    matrix = request.args.get("matrix")
+    if sessionid and lab and matrix:
+        z = os.path.join( os.getcwd(), "files", sessionid, f"{lab}_{matrix}.zip") 
+       
+        if os.path.exists(z):
+            return send_file(
+                z, as_attachment=True, attachment_filename=f"{lab}_{matrix}.zip"
+            )
+        else:
+            return "reformatted zip file not found on the server"
+
     if session.get("new_files"):
         z = os.path.join(
             session['basedir'], 

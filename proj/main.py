@@ -23,7 +23,7 @@ def main():
         print(" [x] Received %r" % body)
         args = json.loads(body)
         full_reformat(*[
-            args['original_dir'], args['new_dir'], args['base_dir'], args['email']
+            args['original_dir'], args['new_dir'], args['base_dir'], args['email'], args['sessionid']
         ])
 
 
