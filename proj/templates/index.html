@@ -10,6 +10,9 @@
 		.hidden {
 			display: none;
 		}
+		ul {
+			text-align: left;
+		}
 	</style>
 
   <body>
@@ -17,9 +20,14 @@
 			<br>
 			<div class="container form-container">
 				<span><p>Report bugs, issues, or ideas for improvement to <a href="mailto:robertb@sccwrp.org">robertb@sccwrp.org</a></p></span>
-				<span><p>If you have a lot of data, you might want to let this run in the background for a while 
-					and work on other stuff for a bit
-				</a></p></span>
+				<ul>
+					<li>If you have a lot of data, you might want to let this run in the background for a while 
+					and work on other stuff for a bit.
+					</li>
+					<li>I estimate the time for the data to reach our server may be about a minute for every 100MB</li>
+					<li>Remember there is a 500MB limit on submissions</li>
+				</ul>
+
 				<form id="upload" action="/reformat/upload" method="GET">
 					<label for="file">Upload excel file and images</label>
 					<br>
