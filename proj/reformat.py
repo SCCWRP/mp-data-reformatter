@@ -396,19 +396,30 @@ def full_reformat(original_dir, new_dir, base_dir, email, sessionid):
                 z.write(filepath, arcname)
         shutil.rmtree(final_dir)
 
-        send_mail(
-            "admin@mpchecker.sccwrp.org",
-            [email, "robertb@sccwrp.org"],
-            "Microplastics - Reformatted Data",
-            f"https://mpchecker.sccwrp.org/reformat/reformatted?\
-                sessionid={sessionid}&\
-                lab={lab}&\
-                matrix={matrix}"
-            ,
-            server = '192.168.1.18'
-        )
+        dl_link = f"\
+            https://mpchecker.sccwrp.org/reformat/reformatted?\
+            sessionid={sessionid}&\
+            lab={lab}&\
+            matrix={matrix}\
+        "
 
-        return json.dumps({"message":"ok"})
+        if email:
+            send_mail(
+                "admin@mpchecker.sccwrp.org",
+                [email, "robertb@sccwrp.org"],
+                "Microplastics - Reformatted Data",
+                dl_link,
+                server = '192.168.1.18'
+            )
+
+        return json.dumps(
+            {
+                "message":"ok",
+                "unaccounted_photos": unaccounted_photos,
+                "missing_photos": missing_photos
+
+            }
+        )
 
     except Exception as e:
         print("Exception occurred")
