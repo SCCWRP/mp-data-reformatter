@@ -28,6 +28,7 @@ def upload():
             )
 
         uploaded_files = request.files.getlist('files[]')
+        assert len(uploaded_files) > 0, "No files found"
         uploaded_filenames = [secure_filename(x.filename) for x in uploaded_files]
 
 

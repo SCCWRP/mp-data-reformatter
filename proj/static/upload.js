@@ -30,7 +30,7 @@ other than to not have the variables in the environment */
             console.log(data);
             if (data.error) {
                 console.log(data.message);
-                alert("Application failed");
+                alert(data.message);
                 /*  Implement notification when the app crashes
                     Let user know that we were notified */
             } else {
@@ -48,7 +48,7 @@ other than to not have the variables in the environment */
                     if (data.missing_photos.length > 0) {
                         /* Warn user of photos that are missing
                         SCCWRP also needs to be made aware of this */
-                        
+
                         document.querySelector(".misnamed-photoid-container").classList.remove("hidden");
                         data.missing_photos.map(p => {
                             document.querySelector(".misnamed-photoid-list")
@@ -58,7 +58,7 @@ other than to not have the variables in the environment */
                 } else if (data.missing_photos.length > 0) {
                     /* Warn user of photos that are missing
                     SCCWRP also needs to be made aware of this */
-                    
+
                     document.querySelector(".missing-photo-container").classList.remove("hidden");
                     data.missing_photos.map(p => {
                         document.querySelector(".missing-photo-list")
