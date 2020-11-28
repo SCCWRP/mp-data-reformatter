@@ -92,35 +92,16 @@ def clear():
 
 @app.route('/<sessionid>')
 def report(sessionid):
-    try:
-        df = pd.read_excel(
-            glob.glob(os.path.join(os.getcwd(), "files", sessionid, "new", "*.xls*"))[0],
-            sheet_name = "Missing Photos or Records"
-        )
+    jsonpath = os.path.join(os.getcwd(), "files", sessionid, f"{sessionid}.json")
+    if os.path.exists(jsonpath):
+        data = json.loads(open(jsonpath, 'r').read())
+    else:
+        return "json file with relevant data was not found."
 
-        missing_photos = df[~pd.isnull(df['Missing Photos'])]['Missing Photos'].tolist()
-
-        unaccounted_photos = \
-            df[
-                ~pd.isnull(df['Photo with No Corresponding Record'])
-            ]['Photo with No Corresponding Record'] \
-            .tolist()
-
-        # There's probably a better way of doing this
-        zglob = glob.glob(os.path.join(os.getcwd(), "files", sessionid, "*.zip"))
-        if len(zglob) > 0:
-            zipfilename = zglob[0].split("/")[-1]
-            lab = zipfilename.split("_")[0]
-            matrix = zipfilename.split("_")[-1].replace(".zip","")
-        else:
-            raise Exception("Zip File not found")
-
-
-    except Exception as e:
-        missing_photos = [f"error occurred trying to get missing photo names"]
-        unaccounted_photos = [f"error occurred trying to get photo names"]
-        print("couldn't read in the excel file")
-        print(str(e))
+    lab = data.get('lab')
+    matrix = data.get('matrix')
+    missing_photos = data.get('missing_photos')
+    unaccounted_photos = data.get('unaccounted_photos')
 
     if sessionid and lab and matrix:
         return render_template(

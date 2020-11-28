@@ -139,7 +139,9 @@ def reformat(orig_df):
 
 
 
-
+# Main function that reformats the data
+# main.py calls this one and listens to the rabbitmq server for incoming requests
+#   so that this function can get run
 def full_reformat(original_dir, new_dir, base_dir, email, sessionid):
     '''
     original_dir is just the directory that keeps the user's original files
@@ -314,6 +316,7 @@ def full_reformat(original_dir, new_dir, base_dir, email, sessionid):
             # Do not run this code if they have photos with no corresponding records
 
             # Here we create the filler images
+            # mp here would be "missing photo"
             [ 
                 os.system(f"touch {os.path.join(new_dir, mp)}.jpg") 
                 for mp in 
@@ -409,14 +412,28 @@ def full_reformat(original_dir, new_dir, base_dir, email, sessionid):
                 server = '192.168.1.18'
             )
 
-        return json.dumps(
-            {
+        # res for response
+        assert isinstance(unaccounted_photos, list), "unaccounted_photos variable is not a list"
+        assert isinstance(missing_photos, list), "missing_photos variable is not a list"
+        assert isinstance(lab, str), "lab variable is not a string"
+        assert isinstance(matrix, str), "matrix variable is not a string"
+        assert sessionid is not None, "sessionid is a NoneType object for some reason"
+        res = {
                 "message":"ok",
                 "unaccounted_photos": unaccounted_photos,
-                "missing_photos": missing_photos
-
+                "missing_photos": missing_photos,
+                "lab": lab,
+                "matrix": matrix,
+                "sessionid": sessionid
             }
-        )
+        with open(os.path.join(base_dir, f"{sessionid}.json"), 'w') as f:
+            json.dump(res, f)
+
+        # upload.py will receive this and parse it
+        # not sure why i don't just return a dictionary but i think its ok
+        # anyways, for rabbit mq it had to be done like this
+        return json.dumps(res)
+        
 
     except Exception as e:
         print("Exception occurred")

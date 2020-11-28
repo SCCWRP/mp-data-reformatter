@@ -118,7 +118,7 @@ def upload():
             print(f"Sent {msgbody}")
             connection.close()
 
-            raise Exception(f"email will be sent to {email}")
+            raise Exception(f"An email will be sent to {email}. You can close this window if you would like.")
 
         res = full_reformat(
             original_dir = session['original_files'],
