@@ -135,7 +135,7 @@ def reformat(orig_df):
 
     return \
         comparison_df, \
-        new.drop(["original_photoid","original_particleid"], axis = 1)
+        new[orig_df.columns.tolist()]
 
 
 
