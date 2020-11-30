@@ -13,6 +13,9 @@
 		ul {
 			text-align: left;
 		}
+		li {
+			margin-bottom: .6rem;
+		}
 	</style>
 
   <body>
@@ -30,8 +33,10 @@
 						This way you only have to wait until the page tells you the server received your files.
 						If you do not want the email, then you can leave the email field blank.
 					</li>
+					<li>Although originally designed to work entirely in the browser, as of now, it only works when you enter your email address. 
+						I'll be working on that, but for now, at least we have something. <strong>Let me know if the email goes to your spam folder.</strong></li>
 				</ul>
-
+				<br>
 				<form id="upload" action="/reformat/upload" method="GET">
 					<label for="email">Enter your email address:</label>
 					<input type="email" name="email" id="email">
